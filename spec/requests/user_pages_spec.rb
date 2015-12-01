@@ -10,7 +10,7 @@ describe "UserPages" do
     it { should have_title(user.name) }
   end
 
-  describe "signup page" do
+  describe "signup" do
     before { visit signup_path }
 
     let(:submit) { "Create my accunt" }
@@ -18,6 +18,31 @@ describe "UserPages" do
       it "should not create a user" do
         expect{ click_button submit }.not_to change(User, :count)
       end
+
+      describe "after submission error check" do
+        before { click_button submit }
+
+        it { should have_title('Sign up') }
+        it { should have_content('error') }
+
+        describe "with no inputed" do
+          it { should have_content("Name can't be blank") }
+          it { should have_content("Email can't be blank") }
+          it { should have_content("Email is invalid") }
+          it { should have_content('Password is too short (minimum is 6 characters)') }
+          it { should have_content("Password can't be blank") }
+        end
+        describe "with already email" do
+          let(:user) { FactoryGirl.create(:user) }
+          before do
+            user.save!
+            fill_in "Email", with: user.email
+            click_button submit
+          end
+          it { should have_content("Email has already been taken") }
+        end
+      end
+
     end
     describe "with valid information"  do
       before do
