@@ -153,6 +153,16 @@ describe "UserPages" do
       specify { expect(user.reload.email).to eq new_email }
     end
 
+    describe "with illegal information" do
+      before do
+        user.admin = true
+        patch user_path(user)
+      end
+      it "should be not able to update admin" do
+        expect(user.reload.admin).to be_false
+      end
+    end
 
   end
+
 end
