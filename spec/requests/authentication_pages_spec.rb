@@ -54,6 +54,23 @@ describe "Authentication" do
   end
 
   describe "authorization" do
+
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user, no_capybara: true }
+      describe "in the Users controller" do
+
+        describe "visiting the User#new" do
+          before { get new_user_path }
+          specify { expect(response).to redirect_to(root_path)}
+        end
+
+        describe "visiting the User#create" do
+          before { post users_path(user) }
+          specify { expect(response).to redirect_to(root_path) }
+        end
+      end
+    end
     describe "for non-signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
 
@@ -73,20 +90,21 @@ describe "Authentication" do
 
       describe "in the Users controller" do
 
-          describe "visiting the edit page" do
-            before { visit edit_user_path user }
-            it { should have_title('Sign in') }
-          end
+        describe "visiting the edit page" do
+          before { visit edit_user_path user }
+          it { should have_title('Sign in') }
+        end
 
-          describe "submitting to the update action" do
-            before { patch user_path(user) }
-            specify { expect(response).to redirect_to(signin_path)}
-          end
+        describe "submitting to the update action" do
+          before { patch user_path(user) }
+          specify { expect(response).to redirect_to(signin_path)}
+        end
 
-          describe "visiting the user index" do
-            before { visit users_path }
-            it { should have_title('Sign in') }
-          end
+        describe "visiting the user index" do
+          before { visit users_path }
+          it { should have_title('Sign in') }
+        end
+
 
       end
     end
