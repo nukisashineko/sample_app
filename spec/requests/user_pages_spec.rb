@@ -153,16 +153,17 @@ describe "UserPages" do
       specify { expect(user.reload.email).to eq new_email }
     end
 
-    describe "with illegal information" do
+    describe "forbidden attributes" do
+      let(:params) do
+        { user: { admin: true, password: user.password,
+                  password_confirmation: user.password } }
+      end
       before do
-        user.admin = true
-        patch user_path(user)
+        sign_in user, no_capybara: true
+        patch user_path(user), params
       end
-      it "should be not able to update admin" do
-        expect(user.reload.admin).to be_false
-      end
+      specify { expect(user.reload).not_to be_admin }
     end
-
   end
 
 end
