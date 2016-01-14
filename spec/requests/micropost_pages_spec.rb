@@ -5,6 +5,22 @@ describe "MicropostPages" do
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
 
+  describe "microposts counter" do
+    describe "with zero count" do
+      before { visit root_path }
+      it { should have_content('0 micropost') }
+    end
+
+    describe "with two count" do
+      before do
+        FactoryGirl.create(:micropost, user: user)
+        FactoryGirl.create(:micropost, user: user)
+        visit root_path
+      end
+      it { should have_content('2 microposts') }
+    end
+  end
+
   describe "micropost creation" do
     before { visit root_path }
 
