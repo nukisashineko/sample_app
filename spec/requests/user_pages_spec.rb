@@ -47,24 +47,31 @@ describe "UserPages" do
     end
   end
   describe "profile page" do
-    let(:user) { FactoryGirl.create(:user) }
-    let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
-    let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
 
-    before { visit user_path(user) }
-    it { should have_content(user.name) }
-    it { should have_title(user.name) }
+    describe "content" do
+      let(:user) { FactoryGirl.create(:user) }
+      let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+      let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+      before { visit user_path(user) }
 
-    describe "microposts" do
-      it { should have_content(m1.content) }
-      it { should have_content(m2.content) }
-      it { should have_content(user.microposts.count) }
+      it { should have_content(user.name) }
+      it { should have_title(user.name) }
+
+      describe "microposts" do
+        it { should have_content(m1.content) }
+        it { should have_content(m2.content) }
+        it { should have_content(user.microposts.count) }
+      end
     end
 
     describe "pagenation" do
-      before(:all) { 30.times { FactoryGirl.create(:micropost, user: user) } }
-
-      it { should have_selector('div.pagination')}
+      user = nil
+      before(:all) do
+        user = FactoryGirl.create(:user)
+        30.times { FactoryGirl.create(:micropost, user: user) }
+        visit user_path(user)
+      end
+      after(:all) { user.microposts.delete_all }
 
       it "should list each micropost" do
         user.microposts.paginate(page: 1).each do |micropost|
