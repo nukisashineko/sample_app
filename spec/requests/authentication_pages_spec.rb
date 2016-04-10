@@ -98,6 +98,18 @@ describe "Authentication" do
           end
 
         end
+
+      end
+
+      describe  "in the Relationships controller" do
+        describe "submitting to the create action" do
+          before { post relationships_path }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
+        describe "submitting to the destroy action" do
+          before { delete relationship_path(1) }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
       end
 
       describe "when attempting to visit a protected page" do
